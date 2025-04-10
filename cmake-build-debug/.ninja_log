@@ -1,0 +1,6 @@
+# ninja log v6
+14	98	7659977973936660	CMakeFiles/Paradigms3.dir/device.cpp.obj	daa86bb5205581af
+9	100	7659977973916525	CMakeFiles/Paradigms3.dir/request.cpp.obj	8d80440e6728f718
+14	1764	7660056618887587	CMakeFiles/Paradigms3.dir/main.cpp.obj	53ce3d87f5c508b1
+1764	1916	7660056636394990	Paradigms3.exe	8e3e0d982c11274e
+15	332	7660057182406721	build.ninja	1be14361559a7b06
