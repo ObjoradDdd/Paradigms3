@@ -8,26 +8,26 @@ int main() {
     int groupCount, devicesPerGroup, queueSize;
     
 
-    std::cout << "Enter number of groups (n > 2): ";
-    std::cin >> groupCount;
+    cout << "Enter number of groups (n > 2): ";
+    cin >> groupCount;
     
     if (groupCount <= 2) {
-        std::cout << "Number of groups must be greater than 2!\n";
+        cout << "Number of groups must be greater than 2!\n";
 
     }
     
-    std::cout << "Enter devices per group (m > 2): ";
-    std::cin >> devicesPerGroup;
+    cout << "Enter devices per group (m > 2): ";
+    cin >> devicesPerGroup;
     
     if (devicesPerGroup <= 2) {
-        std::cout << "Number of devices must be greater than 2!\n";
+        cout << "Number of devices must be greater than 2!\n";
     }
     
-    std::cout << "Enter queue capacity: ";
-    std::cin >> queueSize;
+    cout << "Enter queue capacity: ";
+    cin >> queueSize;
     
     if (queueSize <= 0) {
-        std::cout << "Queue capacity must be positive!\n";
+        cout << "Queue capacity must be positive!\n";
     }
 
     auto* system = new queueing(groupCount, devicesPerGroup, queueSize);
@@ -35,7 +35,7 @@ int main() {
 
     while (true) {
         system->printStatus();
-        std::this_thread::sleep_for(std::chrono::seconds(4));
+        this_thread::sleep_for(chrono::seconds(4));
     }
 
 }

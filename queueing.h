@@ -15,14 +15,14 @@ private:
         }
     };
 
-    std::vector<std::vector<Device*>> devices;
-    std::priority_queue<Request*, std::vector<Request*>, RequestComparator> requestQueue;
-    std::mutex queueMutex;
-    std::condition_variable queueCV;
-    std::atomic<bool> running;
+    vector<vector<Device*>> devices;
+    priority_queue<Request*, vector<Request*>, RequestComparator> requestQueue;
+    mutex queueMutex;
+    condition_variable queueCV;
+    atomic<bool> running;
     int queueCapacity;
-    std::thread generatorThread;
-    std::thread dispatcherThread;
+    thread generatorThread;
+    thread dispatcherThread;
 
 public:
 
@@ -49,23 +49,23 @@ public:
         }
         
 
-        generatorThread = std::thread(&queueing::generateRequests, this);
-        dispatcherThread = std::thread(&queueing::dispatchRequests, this);
+        generatorThread = thread(&queueing::generateRequests, this);
+        dispatcherThread = thread(&queueing::dispatchRequests, this);
     }
 
 
     void generateRequests() {
-        std::random_device rd;
-        std::mt19937 gen(rd());
+        random_device rd;
+        mt19937 gen(rd());
         int requestId = 0;
         
         while (running) {
-            std::unique_lock<std::mutex> lock(queueMutex);
+            unique_lock<mutex> lock(queueMutex);
             
             if (requestQueue.size() < queueCapacity) {
 
-                std::uniform_int_distribution<> groupDis(0, devices.size() - 1);
-                std::uniform_int_distribution<> prioDis(1, 3);
+                uniform_int_distribution<> groupDis(0, devices.size() - 1);
+                uniform_int_distribution<> prioDis(1, 3);
                 
                 auto* request = new Request(
                     groupDis(gen),
@@ -76,21 +76,21 @@ public:
                 requestQueue.push(request);
                 queueCV.notify_one();
                 
-                std::cout << "New request: ID=" << request->requestId
+                cout << "New request: ID=" << request->requestId
                           << " Group=" << request->groupId 
-                          << " Priority=" << request->priority << std::endl;
+                          << " Priority=" << request->priority << endl;
             }
             
             lock.unlock();
 
-            std::uniform_int_distribution<> delayDis(100, 1000);
-            std::this_thread::sleep_for(std::chrono::milliseconds(delayDis(gen)));
+            uniform_int_distribution<> delayDis(100, 1000);
+            this_thread::sleep_for(chrono::milliseconds(delayDis(gen)));
         }
     }
 
     void dispatchRequests() {
         while (running) {
-            std::unique_lock<std::mutex> lock(queueMutex);
+            unique_lock<mutex> lock(queueMutex);
             
             queueCV.wait(lock, [this]() {
                 return !running || !requestQueue.empty();
@@ -111,31 +111,31 @@ public:
             }
             
             lock.unlock();
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            this_thread::sleep_for(chrono::milliseconds(100));
         }
     }
 
 
     void printStatus() {
-        std::lock_guard<std::mutex> lock(queueMutex);
+        lock_guard<mutex> lock(queueMutex);
 
-        std::cout << "Queue: " << requestQueue.size() << "/" 
-                  << queueCapacity << std::endl;
+        cout << "Queue: " << requestQueue.size() << "/" 
+                  << queueCapacity << endl;
         
         for (size_t i = 0; i < devices.size(); ++i) {
-            std::cout << "\nGroup " << i << ":\n";
+            cout << "\nGroup " << i << ":\n";
             for (auto* device : devices[i]) {
-                std::cout << "Device " << device->getDeviceId() << ": ";
+                cout << "Device " << device->getDeviceId() << ": ";
                 if (device->isBusy()) {
                     auto* req = device->getCurrentRequest();
-                    std::cout << "Busy (Request ID=" << req->requestId
+                    cout << "Busy (Request ID=" << req->requestId
                               << ", Priority=" << req->priority 
                               << ", Time=" << device->getRemainingTime() 
                               << "ms)";
                 } else {
-                    std::cout << "Free";
+                    cout << "Free";
                 }
-                std::cout << std::endl;
+                cout << endl;
             }
         }
     }
